@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -17,5 +18,10 @@ public abstract class BaseWebTest {
         driver = DriverFactory.valueOf(DEFAULT_BROWSER).createDriver();
         DriverManager.setDriver(driver);
 
+    }
+
+    @AfterEach
+    public void quit() {
+        driver.quit();
     }
 }

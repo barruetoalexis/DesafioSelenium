@@ -1,8 +1,10 @@
 import org.junit.jupiter.api.Test;
-import pageobjects.cart.AddItemToCartModal;
+import pageobjects.cart.AddItemToCart;
+import pageobjects.cart.BuyCart;
+import pageobjects.cart.CartInfo;
 import pageobjects.login.LoginPage;
 import pageobjects.navigate.Navigate;
-import pageobjects.orderproducts.OrderProductsModal;
+import pageobjects.products.ProductsModal;
 import utils.driver.DriverManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,6 +26,12 @@ public class ChallengeTest extends BaseWebTest{
     String passwordBlocked = "secret_sauce";
     String wordErrorCheckLogin = "Epic sadface: Sorry, this user has been locked out.";
 
+    // Variables Script 4
+    String firstName = "Maximo";
+    String lastName = "Peñas";
+    String zipCode = "464128";
+    String alertComplete = "Thank you for your order!";
+
     @Test
     public void FirstScriptTest(){
         //Login
@@ -34,11 +42,13 @@ public class ChallengeTest extends BaseWebTest{
         loginpage.checkLogin(wordCheckLogin);
 
         // Agregar primer item de la lista al carro.
-        AddItemToCartModal addItem = new AddItemToCartModal();
+        AddItemToCart addItem = new AddItemToCart();
         addItem.AddFirstItem();
 
         // Comprobar que el item "Sauce Labs Backpack" existe en el carro
-        assertThat(addItem.ItemIn()).isEqualTo(itemCheck);
+        CartInfo cartInfo = new CartInfo();
+        String item = cartInfo.getItemFromName(".//*[contains(text(), 'Sauce Labs Backpack')]").getName();
+        assertThat(item).isEqualTo(itemCheck);
 
         DriverManager.quit();
     }
@@ -62,18 +72,30 @@ public class ChallengeTest extends BaseWebTest{
         loginpage.checkLogin(wordCheckLogin);
 
         //Order products high to low
-        OrderProductsModal orderProductsModal = new OrderProductsModal();
-        orderProductsModal.OrderHightoLow();
+        ProductsModal productsModal = new ProductsModal();
+        productsModal.OrderHightoLow();
 
         // Check high to low
-        orderProductsModal.CheckHightoLow();
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
+        productsModal.CheckHightoLow();
     }
+    @Test
+    public  void FourthScriptTest(){
+        //Login
+        Navigate navigate = new Navigate();
+        navigate.NavigateToEspecificPage(url);
+        LoginPage loginpage = new LoginPage();
+        loginpage.login(username, password);
+        loginpage.checkLogin(wordCheckLogin);
 
+        //Agregar primer item al cart
+        AddItemToCart addItem = new AddItemToCart();
+        addItem.AddFirstItem();
+
+        //Checkout information
+        BuyCart buyCart = new BuyCart();
+        buyCart.checkoutInformation(firstName, lastName, zipCode);
+
+        //Assert
+        buyCart.checkOrderComplete(alertComplete);
+    }
 }
